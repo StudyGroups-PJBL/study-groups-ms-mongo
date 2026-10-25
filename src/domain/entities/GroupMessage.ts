@@ -55,3 +55,4 @@ export class GroupMessage {
     this.createdAt = createdAt;
   }
 }
+

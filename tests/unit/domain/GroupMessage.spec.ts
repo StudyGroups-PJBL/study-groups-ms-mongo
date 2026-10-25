@@ -71,3 +71,4 @@ describe('GroupMessage Entity', () => {
     }).toThrow('GroupMessage type must be USER or SYSTEM_EVENT.');
   });
 });
+

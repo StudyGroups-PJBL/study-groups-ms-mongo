@@ -60,3 +60,4 @@ export class StudyGroup {
     this.membersCount -= 1;
   }
 }
+

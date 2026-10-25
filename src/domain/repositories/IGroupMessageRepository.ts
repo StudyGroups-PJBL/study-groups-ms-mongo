@@ -6,3 +6,4 @@ export interface IGroupMessageRepository {
   findById(id: string): Promise<GroupMessage | null>;
   deleteByGroupId(groupId: string): Promise<void>;
 }
+

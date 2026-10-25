@@ -7,3 +7,4 @@ export interface IStudyGroupRepository {
   update(group: StudyGroup): Promise<StudyGroup | null>;
   delete(id: string): Promise<boolean>;
 }
+
