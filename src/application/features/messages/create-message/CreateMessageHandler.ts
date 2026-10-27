@@ -4,11 +4,16 @@ import { IGroupMessageRepository } from '../../../../domain/repositories/IGroupM
 import { IStudyGroupRepository } from '../../../../domain/repositories/IStudyGroupRepository';
 
 export const createMessageSchema = z.object({
-  id: z.string().trim().min(1).optional(),
-  groupId: z.string().trim().min(1, 'GroupMessage groupId is required.'),
-  authorName: z.string().trim().min(1, 'GroupMessage authorName is required.'),
-  content: z.string().trim().min(1, 'GroupMessage content is required.'),
-  type: z.enum(['USER', 'SYSTEM_EVENT']).optional().default('USER')
+  id: z.string().trim().min(1, 'O identificador da mensagem não pode ser vazio.').optional(),
+  groupId: z.string().trim().min(1, 'O identificador do grupo é obrigatório.'),
+  authorName: z.string().trim().min(1, 'O nome do autor é obrigatório.'),
+  content: z.string().trim().min(1, 'O conteúdo da mensagem é obrigatório.'),
+  type: z
+    .enum(['USER', 'SYSTEM_EVENT'], {
+      message: 'O tipo da mensagem deve ser USER ou SYSTEM_EVENT.'
+    })
+    .optional()
+    .default('USER')
 });
 
 export type CreateMessageInput = z.input<typeof createMessageSchema>;
@@ -25,7 +30,7 @@ export class CreateMessageHandler {
     if (this.studyGroupRepository) {
       const group = await this.studyGroupRepository.findById(validated.groupId);
       if (!group) {
-        throw new Error('StudyGroup not found.');
+        throw new Error('Grupo de estudo não encontrado.');
       }
     }
 
