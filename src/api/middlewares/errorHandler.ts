@@ -9,7 +9,7 @@ export function errorHandler(
 ): void {
   if (err instanceof ZodError) {
     res.status(400).json({
-      error: 'Validation Error',
+      error: 'Erro de Validação',
       details: err.errors.map((issue) => ({
         field: issue.path.join('.'),
         message: issue.message
@@ -18,27 +18,35 @@ export function errorHandler(
     return;
   }
 
-  if (err.message && err.message.toLowerCase().includes('not found')) {
+  const normalizedMessage = err.message ? err.message.toLowerCase() : '';
+
+  if (
+    normalizedMessage.includes('não encontrado') ||
+    normalizedMessage.includes('nao encontrado')
+  ) {
     res.status(404).json({
-      error: 'Not Found',
+      error: 'Recurso Não Encontrado',
       message: err.message
     });
     return;
   }
 
   if (
-    err.message &&
-    (err.message.includes('StudyGroup') || err.message.includes('GroupMessage'))
+    normalizedMessage.includes('grupo') ||
+    normalizedMessage.includes('mensagem') ||
+    normalizedMessage.includes('membros') ||
+    normalizedMessage.includes('autor') ||
+    normalizedMessage.includes('assunto')
   ) {
     res.status(400).json({
-      error: 'Domain Validation Error',
+      error: 'Erro de Regra de Domínio',
       message: err.message
     });
     return;
   }
 
   res.status(500).json({
-    error: 'Internal Server Error',
-    message: err.message || 'Unexpected error occurred.'
+    error: 'Erro Interno do Servidor',
+    message: err.message || 'Ocorreu um erro inesperado no servidor.'
   });
 }

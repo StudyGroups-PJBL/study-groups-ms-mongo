@@ -3,11 +3,16 @@ import { StudyGroup } from '../../../../domain/entities/StudyGroup';
 import { IStudyGroupRepository } from '../../../../domain/repositories/IStudyGroupRepository';
 
 export const createGroupSchema = z.object({
-  id: z.string().trim().min(1).optional(),
-  name: z.string().trim().min(3, 'StudyGroup name must have at least 3 characters.'),
-  subject: z.string().trim().min(1, 'StudyGroup subject is required.'),
+  id: z.string().trim().min(1, 'O identificador do grupo de estudo não pode ser vazio.').optional(),
+  name: z.string().trim().min(3, 'O nome do grupo de estudo deve ter pelo menos 3 caracteres.'),
+  subject: z.string().trim().min(1, 'O assunto do grupo de estudo é obrigatório.'),
   description: z.string().trim().optional().default(''),
-  membersCount: z.number().int().min(1).optional().default(1)
+  membersCount: z
+    .number()
+    .int('A quantidade de membros deve ser um número inteiro.')
+    .min(1, 'A quantidade de membros deve ser maior ou igual a 1.')
+    .optional()
+    .default(1)
 });
 
 export type CreateGroupInput = z.input<typeof createGroupSchema>;

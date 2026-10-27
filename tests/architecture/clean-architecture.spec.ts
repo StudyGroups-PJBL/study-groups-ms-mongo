@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { filesOfProject } from 'tsarch';
 
-describe('Clean Architecture Rules', () => {
-  it('domain should not depend on application, infrastructure or api', async () => {
+describe('Regras de Arquitetura Limpa (Clean Architecture)', () => {
+  it('a camada domain não deve depender de application, infrastructure ou api', async () => {
     const forbiddenLayers = ['application', 'infrastructure', 'api'];
 
     for (const layer of forbiddenLayers) {
@@ -17,7 +17,7 @@ describe('Clean Architecture Rules', () => {
     }
   });
 
-  it('application should only depend on domain and not on infrastructure or api', async () => {
+  it('a camada application deve depender apenas de domain e não de infrastructure ou api', async () => {
     const forbiddenLayers = ['infrastructure', 'api'];
 
     for (const layer of forbiddenLayers) {
@@ -32,7 +32,7 @@ describe('Clean Architecture Rules', () => {
     }
   });
 
-  it('infrastructure should not depend on api', async () => {
+  it('a camada infrastructure não deve depender da camada api', async () => {
     const violations = await filesOfProject()
       .inFolder('infrastructure')
       .shouldNot()

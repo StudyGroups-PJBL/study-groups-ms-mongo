@@ -8,7 +8,8 @@ import { MongoGroupMessageRepository } from '../infrastructure/persistence/Mongo
 import { createGroupRoutes } from './routes/groupRoutes';
 import { createMessageRoutes } from './routes/messageRoutes';
 import { errorHandler } from './middlewares/errorHandler';
-import { openApiSpec } from './swagger/openapi';
+import { openapiSpec } from './docs/openapiSpec';
+import { eventsDocsSpec, renderEventsDocsHtml } from './docs/eventsDocs';
 
 export interface AppDependencies {
   studyGroupRepository?: IStudyGroupRepository;
@@ -28,17 +29,26 @@ export function createApp(deps?: AppDependencies): Express {
 
   app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({
-      status: 'ok',
+      status: 'operacional',
       service: 'study-groups-ms-mongo',
+      message: 'Microsserviço de Grupos de Estudo e Mural de Mensagens ativo.',
       timestamp: new Date().toISOString()
     });
   });
 
   app.get('/api-docs.json', (_req: Request, res: Response) => {
-    res.status(200).json(openApiSpec);
+    res.status(200).json(openapiSpec);
   });
 
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
+
+  app.get('/events-docs.json', (_req: Request, res: Response) => {
+    res.status(200).json(eventsDocsSpec);
+  });
+
+  app.get('/events-docs', (_req: Request, res: Response) => {
+    res.status(200).type('html').send(renderEventsDocsHtml());
+  });
 
   app.use('/api/groups', createGroupRoutes(studyGroupRepository, groupMessageRepository));
   app.use('/api/messages', createMessageRoutes(groupMessageRepository));

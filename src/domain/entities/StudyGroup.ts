@@ -26,19 +26,19 @@ export class StudyGroup {
     const createdAt = props.createdAt ?? new Date();
 
     if (!id) {
-      throw new Error('StudyGroup id cannot be empty.');
+      throw new Error('O identificador do grupo de estudo não pode ser vazio.');
     }
 
     if (name.length < 3) {
-      throw new Error('StudyGroup name must have at least 3 characters.');
+      throw new Error('O nome do grupo de estudo deve ter pelo menos 3 caracteres.');
     }
 
     if (!subject) {
-      throw new Error('StudyGroup subject is required.');
+      throw new Error('O assunto do grupo de estudo é obrigatório.');
     }
 
     if (!Number.isInteger(membersCount) || membersCount < 1) {
-      throw new Error('StudyGroup membersCount must be an integer greater than or equal to 1.');
+      throw new Error('A quantidade de membros deve ser um número inteiro maior ou igual a 1.');
     }
 
     this.id = id;
@@ -55,9 +55,8 @@ export class StudyGroup {
 
   public removeMember(): void {
     if (this.membersCount <= 1) {
-      throw new Error('StudyGroup membersCount must be an integer greater than or equal to 1.');
+      throw new Error('A quantidade de membros deve ser um número inteiro maior ou igual a 1.');
     }
     this.membersCount -= 1;
   }
 }
-

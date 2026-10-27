@@ -3,7 +3,7 @@ import { IStudyGroupRepository } from '../../../../domain/repositories/IStudyGro
 import { IGroupMessageRepository } from '../../../../domain/repositories/IGroupMessageRepository';
 
 export const deleteGroupSchema = z.object({
-  id: z.string().trim().min(1, 'StudyGroup id is required.')
+  id: z.string().trim().min(1, 'O identificador do grupo de estudo é obrigatório.')
 });
 
 export type DeleteGroupInput = z.infer<typeof deleteGroupSchema>;
@@ -19,7 +19,7 @@ export class DeleteGroupHandler {
     const deleted = await this.studyGroupRepository.delete(validated.id);
 
     if (!deleted) {
-      throw new Error('StudyGroup not found.');
+      throw new Error('Grupo de estudo não encontrado.');
     }
 
     if (this.groupMessageRepository) {

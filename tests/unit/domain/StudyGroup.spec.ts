@@ -1,70 +1,70 @@
 import { describe, it, expect } from 'vitest';
 import { StudyGroup } from '../../../src/domain/entities/StudyGroup';
 
-describe('StudyGroup Entity', () => {
-  it('should create a valid StudyGroup with default values', () => {
+describe('Entidade StudyGroup (Grupo de Estudo)', () => {
+  it('deve criar um grupo de estudo válido com valores padrão', () => {
     const group = new StudyGroup({
-      name: 'Clean Architecture Study',
-      subject: 'Software Architecture',
-      description: 'Group for studying Clean Architecture and DDD'
+      name: 'Grupo de Arquitetura Limpa',
+      subject: 'Arquitetura de Software',
+      description: 'Grupo dedicado ao estudo de Clean Architecture e DDD'
     });
 
     expect(group.id).toBeDefined();
-    expect(group.name).toBe('Clean Architecture Study');
-    expect(group.subject).toBe('Software Architecture');
-    expect(group.description).toBe('Group for studying Clean Architecture and DDD');
+    expect(group.name).toBe('Grupo de Arquitetura Limpa');
+    expect(group.subject).toBe('Arquitetura de Software');
+    expect(group.description).toBe('Grupo dedicado ao estudo de Clean Architecture e DDD');
     expect(group.membersCount).toBe(1);
     expect(group.createdAt).toBeInstanceOf(Date);
   });
 
-  it('should create a valid StudyGroup with provided id, membersCount and createdAt', () => {
+  it('deve criar um grupo de estudo válido com id, quantidade de membros e data informados', () => {
     const createdAt = new Date('2026-10-24T19:00:00Z');
     const group = new StudyGroup({
-      id: 'group-123',
-      name: 'Node.js Microservices',
-      subject: 'Backend Engineering',
-      description: 'Event-driven microservices with RabbitMQ',
+      id: 'grupo-123',
+      name: 'Microsserviços com Node.js',
+      subject: 'Engenharia de Backend',
+      description: 'Arquitetura orientada a eventos com RabbitMQ e MongoDB',
       membersCount: 5,
       createdAt
     });
 
-    expect(group.id).toBe('group-123');
+    expect(group.id).toBe('grupo-123');
     expect(group.membersCount).toBe(5);
     expect(group.createdAt).toBe(createdAt);
   });
 
-  it('should throw an error when name has fewer than 3 characters', () => {
+  it('deve lançar erro quando o nome tiver menos de 3 caracteres', () => {
     expect(() => {
       new StudyGroup({
         name: 'AB',
-        subject: 'Math'
+        subject: 'Matemática Discreta'
       });
-    }).toThrow('StudyGroup name must have at least 3 characters.');
+    }).toThrow('O nome do grupo de estudo deve ter pelo menos 3 caracteres.');
   });
 
-  it('should throw an error when subject is empty', () => {
+  it('deve lançar erro quando o assunto for vazio', () => {
     expect(() => {
       new StudyGroup({
-        name: 'Calculus I',
+        name: 'Cálculo Diferencial I',
         subject: '   '
       });
-    }).toThrow('StudyGroup subject is required.');
+    }).toThrow('O assunto do grupo de estudo é obrigatório.');
   });
 
-  it('should throw an error when membersCount is less than 1', () => {
+  it('deve lançar erro quando a quantidade de membros for menor que 1', () => {
     expect(() => {
       new StudyGroup({
-        name: 'Algorithms',
-        subject: 'Computer Science',
+        name: 'Estruturas de Dados',
+        subject: 'Ciência da Computação',
         membersCount: 0
       });
-    }).toThrow('StudyGroup membersCount must be an integer greater than or equal to 1.');
+    }).toThrow('A quantidade de membros deve ser um número inteiro maior ou igual a 1.');
   });
 
-  it('should increment and decrement membersCount respecting invariants', () => {
+  it('deve incrementar e decrementar a quantidade de membros respeitando as invariantes', () => {
     const group = new StudyGroup({
-      name: 'Distributed Systems',
-      subject: 'Computer Science',
+      name: 'Sistemas Distribuídos',
+      subject: 'Ciência da Computação',
       membersCount: 1
     });
 
@@ -75,8 +75,7 @@ describe('StudyGroup Entity', () => {
     expect(group.membersCount).toBe(1);
 
     expect(() => group.removeMember()).toThrow(
-      'StudyGroup membersCount must be an integer greater than or equal to 1.'
+      'A quantidade de membros deve ser um número inteiro maior ou igual a 1.'
     );
   });
 });
-

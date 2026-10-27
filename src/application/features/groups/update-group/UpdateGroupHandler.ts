@@ -3,11 +3,15 @@ import { StudyGroup } from '../../../../domain/entities/StudyGroup';
 import { IStudyGroupRepository } from '../../../../domain/repositories/IStudyGroupRepository';
 
 export const updateGroupSchema = z.object({
-  id: z.string().trim().min(1, 'StudyGroup id is required.'),
-  name: z.string().trim().min(3, 'StudyGroup name must have at least 3 characters.').optional(),
-  subject: z.string().trim().min(1, 'StudyGroup subject is required.').optional(),
+  id: z.string().trim().min(1, 'O identificador do grupo de estudo é obrigatório.'),
+  name: z.string().trim().min(3, 'O nome do grupo de estudo deve ter pelo menos 3 caracteres.').optional(),
+  subject: z.string().trim().min(1, 'O assunto do grupo de estudo é obrigatório.').optional(),
   description: z.string().trim().optional(),
-  membersCount: z.number().int().min(1).optional()
+  membersCount: z
+    .number()
+    .int('A quantidade de membros deve ser um número inteiro.')
+    .min(1, 'A quantidade de membros deve ser maior ou igual a 1.')
+    .optional()
 });
 
 export type UpdateGroupInput = z.infer<typeof updateGroupSchema>;
@@ -20,7 +24,7 @@ export class UpdateGroupHandler {
     const existing = await this.studyGroupRepository.findById(validated.id);
 
     if (!existing) {
-      throw new Error('StudyGroup not found.');
+      throw new Error('Grupo de estudo não encontrado.');
     }
 
     const updatedEntity = new StudyGroup({
@@ -34,7 +38,7 @@ export class UpdateGroupHandler {
 
     const saved = await this.studyGroupRepository.update(updatedEntity);
     if (!saved) {
-      throw new Error('StudyGroup not found.');
+      throw new Error('Grupo de estudo não encontrado.');
     }
 
     return saved;

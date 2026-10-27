@@ -28,23 +28,23 @@ export class GroupMessage {
     const createdAt = props.createdAt ?? new Date();
 
     if (!id) {
-      throw new Error('GroupMessage id cannot be empty.');
+      throw new Error('O identificador da mensagem não pode ser vazio.');
     }
 
     if (!groupId) {
-      throw new Error('GroupMessage groupId is required.');
+      throw new Error('O identificador do grupo é obrigatório.');
     }
 
     if (!authorName) {
-      throw new Error('GroupMessage authorName is required.');
+      throw new Error('O nome do autor é obrigatório.');
     }
 
     if (!content) {
-      throw new Error('GroupMessage content is required.');
+      throw new Error('O conteúdo da mensagem é obrigatório.');
     }
 
     if (type !== 'USER' && type !== 'SYSTEM_EVENT') {
-      throw new Error('GroupMessage type must be USER or SYSTEM_EVENT.');
+      throw new Error('O tipo da mensagem deve ser USER ou SYSTEM_EVENT.');
     }
 
     this.id = id;
@@ -55,4 +55,3 @@ export class GroupMessage {
     this.createdAt = createdAt;
   }
 }
-

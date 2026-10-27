@@ -8,7 +8,7 @@ import { GetGroupByIdHandler } from '../../../src/application/features/groups/ge
 import { UpdateGroupHandler } from '../../../src/application/features/groups/update-group/UpdateGroupHandler';
 import { DeleteGroupHandler } from '../../../src/application/features/groups/delete-group/DeleteGroupHandler';
 
-describe('StudyGroup Application Handlers', () => {
+describe('Handlers de Aplicação para Grupos de Estudo', () => {
   let mockGroupRepo: IStudyGroupRepository;
   let mockMessageRepo: IGroupMessageRepository;
 
@@ -31,23 +31,23 @@ describe('StudyGroup Application Handlers', () => {
   });
 
   describe('CreateGroupHandler', () => {
-    it('should validate input and create a new study group', async () => {
+    it('deve validar os dados de entrada e criar um novo grupo de estudo', async () => {
       const handler = new CreateGroupHandler(mockGroupRepo);
 
       const result = await handler.execute({
-        name: 'Clean Architecture Group',
-        subject: 'Software Engineering',
-        description: 'Weekly architecture discussions'
+        name: 'Grupo de Estudos de Arquitetura Limpa',
+        subject: 'Engenharia de Software',
+        description: 'Discussões semanais sobre arquitetura e microsserviços'
       });
 
       expect(result).toBeInstanceOf(StudyGroup);
-      expect(result.name).toBe('Clean Architecture Group');
-      expect(result.subject).toBe('Software Engineering');
+      expect(result.name).toBe('Grupo de Estudos de Arquitetura Limpa');
+      expect(result.subject).toBe('Engenharia de Software');
       expect(result.membersCount).toBe(1);
       expect(mockGroupRepo.create).toHaveBeenCalledTimes(1);
     });
 
-    it('should reject invalid input via zod validation', async () => {
+    it('deve rejeitar dados inválidos através da validação do Zod', async () => {
       const handler = new CreateGroupHandler(mockGroupRepo);
 
       await expect(
@@ -62,10 +62,10 @@ describe('StudyGroup Application Handlers', () => {
   });
 
   describe('ListGroupsHandler', () => {
-    it('should return all study groups and filter by subject when provided', async () => {
+    it('deve retornar todos os grupos e permitir filtragem por assunto', async () => {
       const groups = [
-        new StudyGroup({ name: 'NodeJS Study', subject: 'Backend' }),
-        new StudyGroup({ name: 'React Study', subject: 'Frontend' })
+        new StudyGroup({ name: 'Estudos de Node.js', subject: 'Desenvolvimento Backend' }),
+        new StudyGroup({ name: 'Estudos de React', subject: 'Desenvolvimento Frontend' })
       ];
       vi.mocked(mockGroupRepo.findAll).mockResolvedValue(groups);
 
@@ -76,82 +76,90 @@ describe('StudyGroup Application Handlers', () => {
 
       const filteredResult = await handler.execute({ subject: 'backend' });
       expect(filteredResult).toHaveLength(1);
-      expect(filteredResult[0].name).toBe('NodeJS Study');
+      expect(filteredResult[0].name).toBe('Estudos de Node.js');
     });
   });
 
   describe('GetGroupByIdHandler', () => {
-    it('should return a study group when found', async () => {
-      const group = new StudyGroup({ id: 'group-1', name: 'DDD Study', subject: 'Architecture' });
+    it('deve retornar o grupo de estudo quando encontrado pelo identificador', async () => {
+      const group = new StudyGroup({
+        id: 'grupo-1',
+        name: 'Grupo de DDD',
+        subject: 'Arquitetura de Software'
+      });
       vi.mocked(mockGroupRepo.findById).mockResolvedValue(group);
 
       const handler = new GetGroupByIdHandler(mockGroupRepo);
-      const result = await handler.execute({ id: 'group-1' });
+      const result = await handler.execute({ id: 'grupo-1' });
 
-      expect(result.id).toBe('group-1');
+      expect(result.id).toBe('grupo-1');
     });
 
-    it('should throw an error when study group is not found', async () => {
+    it('deve lançar erro quando o grupo de estudo não for encontrado', async () => {
       vi.mocked(mockGroupRepo.findById).mockResolvedValue(null);
 
       const handler = new GetGroupByIdHandler(mockGroupRepo);
-      await expect(handler.execute({ id: 'missing-id' })).rejects.toThrow('StudyGroup not found.');
+      await expect(handler.execute({ id: 'id-inexistente' })).rejects.toThrow(
+        'Grupo de estudo não encontrado.'
+      );
     });
   });
 
   describe('UpdateGroupHandler', () => {
-    it('should update an existing study group', async () => {
+    it('deve atualizar os dados de um grupo de estudo existente', async () => {
       const existing = new StudyGroup({
-        id: 'group-1',
-        name: 'Old Name',
-        subject: 'Math',
-        description: 'Old desc',
+        id: 'grupo-1',
+        name: 'Nome Antigo',
+        subject: 'Matemática',
+        description: 'Descrição antiga',
         membersCount: 2
       });
       vi.mocked(mockGroupRepo.findById).mockResolvedValue(existing);
 
       const handler = new UpdateGroupHandler(mockGroupRepo);
       const updated = await handler.execute({
-        id: 'group-1',
-        name: 'New Name',
+        id: 'grupo-1',
+        name: 'Nome Atualizado',
         membersCount: 5
       });
 
-      expect(updated.name).toBe('New Name');
-      expect(updated.subject).toBe('Math');
+      expect(updated.name).toBe('Nome Atualizado');
+      expect(updated.subject).toBe('Matemática');
       expect(updated.membersCount).toBe(5);
       expect(mockGroupRepo.update).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw an error when updating a non-existent study group', async () => {
+    it('deve lançar erro ao tentar atualizar um grupo de estudo inexistente', async () => {
       vi.mocked(mockGroupRepo.findById).mockResolvedValue(null);
 
       const handler = new UpdateGroupHandler(mockGroupRepo);
       await expect(
         handler.execute({
-          id: 'missing-id',
-          name: 'Updated Name'
+          id: 'id-inexistente',
+          name: 'Nome Atualizado'
         })
-      ).rejects.toThrow('StudyGroup not found.');
+      ).rejects.toThrow('Grupo de estudo não encontrado.');
     });
   });
 
   describe('DeleteGroupHandler', () => {
-    it('should delete an existing study group and its messages', async () => {
+    it('deve remover um grupo de estudo existente e excluir as mensagens do seu mural', async () => {
       vi.mocked(mockGroupRepo.delete).mockResolvedValue(true);
 
       const handler = new DeleteGroupHandler(mockGroupRepo, mockMessageRepo);
-      await handler.execute({ id: 'group-1' });
+      await handler.execute({ id: 'grupo-1' });
 
-      expect(mockGroupRepo.delete).toHaveBeenCalledWith('group-1');
-      expect(mockMessageRepo.deleteByGroupId).toHaveBeenCalledWith('group-1');
+      expect(mockGroupRepo.delete).toHaveBeenCalledWith('grupo-1');
+      expect(mockMessageRepo.deleteByGroupId).toHaveBeenCalledWith('grupo-1');
     });
 
-    it('should throw an error when deleting a non-existent study group', async () => {
+    it('deve lançar erro ao tentar remover um grupo de estudo inexistente', async () => {
       vi.mocked(mockGroupRepo.delete).mockResolvedValue(false);
 
       const handler = new DeleteGroupHandler(mockGroupRepo, mockMessageRepo);
-      await expect(handler.execute({ id: 'missing-id' })).rejects.toThrow('StudyGroup not found.');
+      await expect(handler.execute({ id: 'id-inexistente' })).rejects.toThrow(
+        'Grupo de estudo não encontrado.'
+      );
     });
   });
 });

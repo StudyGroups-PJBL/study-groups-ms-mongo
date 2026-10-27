@@ -3,7 +3,7 @@ import { StudyGroup } from '../../../../domain/entities/StudyGroup';
 import { IStudyGroupRepository } from '../../../../domain/repositories/IStudyGroupRepository';
 
 export const getGroupByIdSchema = z.object({
-  id: z.string().trim().min(1, 'StudyGroup id is required.')
+  id: z.string().trim().min(1, 'O identificador do grupo de estudo é obrigatório.')
 });
 
 export type GetGroupByIdInput = z.infer<typeof getGroupByIdSchema>;
@@ -16,7 +16,7 @@ export class GetGroupByIdHandler {
     const group = await this.studyGroupRepository.findById(validated.id);
 
     if (!group) {
-      throw new Error('StudyGroup not found.');
+      throw new Error('Grupo de estudo não encontrado.');
     }
 
     return group;

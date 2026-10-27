@@ -6,7 +6,7 @@ import { IGroupMessageRepository } from '../../../src/domain/repositories/IGroup
 import { CreateMessageHandler } from '../../../src/application/features/messages/create-message/CreateMessageHandler';
 import { ListGroupMessagesHandler } from '../../../src/application/features/messages/list-group-messages/ListGroupMessagesHandler';
 
-describe('GroupMessage Application Handlers', () => {
+describe('Handlers de Aplicação para o Mural de Mensagens', () => {
   let mockMessageRepo: IGroupMessageRepository;
   let mockGroupRepo: IStudyGroupRepository;
 
@@ -29,44 +29,48 @@ describe('GroupMessage Application Handlers', () => {
   });
 
   describe('CreateMessageHandler', () => {
-    it('should create a message for an existing study group', async () => {
-      const group = new StudyGroup({ id: 'group-1', name: 'DDD Group', subject: 'Architecture' });
+    it('deve criar uma mensagem no mural para um grupo de estudo existente', async () => {
+      const group = new StudyGroup({
+        id: 'grupo-1',
+        name: 'Grupo de DDD',
+        subject: 'Arquitetura de Software'
+      });
       vi.mocked(mockGroupRepo.findById).mockResolvedValue(group);
 
       const handler = new CreateMessageHandler(mockMessageRepo, mockGroupRepo);
       const message = await handler.execute({
-        groupId: 'group-1',
-        authorName: 'Lara',
-        content: 'Let us review Clean Architecture chapters!'
+        groupId: 'grupo-1',
+        authorName: 'Lara Bredow',
+        content: 'Vamos revisar os capítulos de Arquitetura Limpa hoje!'
       });
 
       expect(message).toBeInstanceOf(GroupMessage);
-      expect(message.groupId).toBe('group-1');
-      expect(message.authorName).toBe('Lara');
+      expect(message.groupId).toBe('grupo-1');
+      expect(message.authorName).toBe('Lara Bredow');
       expect(message.type).toBe('USER');
       expect(mockMessageRepo.create).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw an error if the target study group does not exist', async () => {
+    it('deve lançar erro caso o grupo de estudo informado não exista', async () => {
       vi.mocked(mockGroupRepo.findById).mockResolvedValue(null);
 
       const handler = new CreateMessageHandler(mockMessageRepo, mockGroupRepo);
       await expect(
         handler.execute({
-          groupId: 'non-existent',
-          authorName: 'Lara',
-          content: 'Hello'
+          groupId: 'grupo-inexistente',
+          authorName: 'Lara Bredow',
+          content: 'Olá equipe!'
         })
-      ).rejects.toThrow('StudyGroup not found.');
+      ).rejects.toThrow('Grupo de estudo não encontrado.');
 
       expect(mockMessageRepo.create).not.toHaveBeenCalled();
     });
 
-    it('should reject invalid message payload via zod', async () => {
+    it('deve rejeitar payload de mensagem inválido via validação Zod', async () => {
       const handler = new CreateMessageHandler(mockMessageRepo);
       await expect(
         handler.execute({
-          groupId: 'group-1',
+          groupId: 'grupo-1',
           authorName: '',
           content: ''
         })
@@ -75,30 +79,30 @@ describe('GroupMessage Application Handlers', () => {
   });
 
   describe('ListGroupMessagesHandler', () => {
-    it('should list messages by groupId when groupId is provided', async () => {
+    it('deve listar as mensagens filtradas por groupId quando informado', async () => {
       const messages = [
         new GroupMessage({
-          groupId: 'group-1',
-          authorName: 'Viktor',
-          content: 'First post in group 1'
+          groupId: 'grupo-1',
+          authorName: 'Viktor Trawinski',
+          content: 'Primeira publicação no mural do grupo 1'
         })
       ];
       vi.mocked(mockMessageRepo.findByGroupId).mockResolvedValue(messages);
 
       const handler = new ListGroupMessagesHandler(mockMessageRepo);
-      const result = await handler.execute({ groupId: 'group-1' });
+      const result = await handler.execute({ groupId: 'grupo-1' });
 
       expect(result).toHaveLength(1);
-      expect(mockMessageRepo.findByGroupId).toHaveBeenCalledWith('group-1');
+      expect(mockMessageRepo.findByGroupId).toHaveBeenCalledWith('grupo-1');
       expect(mockMessageRepo.findLatest).not.toHaveBeenCalled();
     });
 
-    it('should list latest general messages when groupId is not provided', async () => {
+    it('deve listar as últimas mensagens gerais quando groupId não for informado', async () => {
       const messages = [
         new GroupMessage({
-          groupId: 'group-1',
-          authorName: 'João',
-          content: 'General board message'
+          groupId: 'grupo-1',
+          authorName: 'João Gabriel Cintra',
+          content: 'Mensagem geral no mural de estudos'
         })
       ];
       vi.mocked(mockMessageRepo.findLatest).mockResolvedValue(messages);
