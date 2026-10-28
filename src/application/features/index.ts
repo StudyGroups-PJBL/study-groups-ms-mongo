@@ -5,3 +5,4 @@ export * from './groups/update-group/UpdateGroupHandler';
 export * from './groups/delete-group/DeleteGroupHandler';
 export * from './messages/create-message/CreateMessageHandler';
 export * from './messages/list-group-messages/ListGroupMessagesHandler';
+export * from './messages/handle-task-event/HandleTaskEventHandler';
