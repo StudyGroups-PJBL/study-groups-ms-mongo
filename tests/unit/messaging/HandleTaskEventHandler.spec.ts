@@ -47,6 +47,52 @@ describe('HandleTaskEventHandler (Eventos Assíncronos do Quadro Kanban)', () =>
     expect(mockMessageRepo.create).toHaveBeenCalledTimes(1);
   });
 
+  it('deve processar o formato de envelope publicado pelo study-groups-ms-sql (event, timestamp, data)', async () => {
+    const handler = new HandleTaskEventHandler(mockMessageRepo);
+
+    const createdMessage = await handler.execute({
+      event: 'task.status.changed',
+      timestamp: '2026-10-30T18:30:00.000Z',
+      data: {
+        taskId: 'c4b09f34-8d2a-4f10-9a1b-1e5a7f8c9d01',
+        groupId: 'grupo-arquitetura-01',
+        title: 'Resolver lista de arquitetura cloud',
+        oldStatus: 'TODO',
+        newStatus: 'DOING'
+      }
+    });
+
+    expect(createdMessage).toBeInstanceOf(GroupMessage);
+    expect(createdMessage.groupId).toBe('grupo-arquitetura-01');
+    expect(createdMessage.authorName).toBe('Sistema Kanban');
+    expect(createdMessage.type).toBe('SYSTEM_EVENT');
+    expect(createdMessage.content).toBe(
+      'A tarefa "Resolver lista de arquitetura cloud" teve seu status alterado de "TODO" para "DOING".'
+    );
+    expect(mockMessageRepo.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('deve processar evento de criação de tarefa quando oldStatus for null', async () => {
+    const handler = new HandleTaskEventHandler(mockMessageRepo);
+
+    const createdMessage = await handler.execute({
+      event: 'task.status.changed',
+      timestamp: '2026-10-30T18:30:00.000Z',
+      data: {
+        taskId: 'c4b09f34-8d2a-4f10-9a1b-1e5a7f8c9d01',
+        groupId: 'grupo-arquitetura-01',
+        title: 'Nova tarefa Kanban',
+        oldStatus: null,
+        newStatus: 'TODO'
+      }
+    });
+
+    expect(createdMessage.content).toBe(
+      'A tarefa "Nova tarefa Kanban" foi criada no quadro Kanban com status "TODO".'
+    );
+    expect(mockMessageRepo.create).toHaveBeenCalledTimes(1);
+  });
+
   it('deve rejeitar evento com payload incompleto ou inválido', async () => {
     const handler = new HandleTaskEventHandler(mockMessageRepo);
 

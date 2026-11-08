@@ -66,9 +66,9 @@ export class RabbitMqConsumer {
         try {
           const rawContent = msg.content.toString('utf-8');
           const parsedEvent = JSON.parse(rawContent);
-          await this.handleTaskEventHandler.execute(parsedEvent);
+          const createdMessage = await this.handleTaskEventHandler.execute(parsedEvent);
           console.log(
-            `Evento de tarefa processado e registrado no mural do grupo "${parsedEvent?.payload?.groupId}".`
+            `Evento de tarefa processado e registrado no mural do grupo "${createdMessage.groupId}".`
           );
           ch.ack(msg);
         } catch (error) {
